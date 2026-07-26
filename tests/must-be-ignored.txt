@@ -1,0 +1,222 @@
+# Paths that MUST be ignored by ultimate.gitignore.
+# One path per line. Blank lines and #-comments are skipped.
+# verify.sh creates each of these in a throwaway repo and asserts
+# `git check-ignore` matches.
+
+# --- secrets ---
+.env
+.env.local
+.env.production
+config/master.key
+.terraform/providers/registry
+tfplan.tfstate
+gha-creds-abc123.json
+credentials.json
+token.json
+client_secret_123.json
+key.pem
+id_rsa
+.netrc
+.pypirc
+.docker/config.json
+.aws/credentials
+application_default_credentials.json
+
+# --- claude code ---
+.claude/settings.local.json
+.claude/agent-memory-local/reviewer/mem.md
+.claude/skills/foo/tmp/scratch.txt
+CLAUDE.local.md
+
+# --- impeccable (root) ---
+.impeccable/config.local.json
+.impeccable/hook.cache.json
+.impeccable/hook.pending.json
+.impeccable/screenshot.png
+.impeccable/live/server.json
+.impeccable/live/sessions/s1.json
+.impeccable/live/previews/p.html
+.impeccable/live/cache/c.json
+.impeccable/live/manual-edit-events.jsonl
+.impeccable/live/manual-edit-evidence/e.json
+.impeccable/live/pending-manual-edits.json
+
+# --- impeccable (monorepo — the case their own README block misses) ---
+apps/web/.impeccable/config.local.json
+apps/web/.impeccable/hook.cache.json
+apps/web/.impeccable/screenshot.png
+apps/web/.impeccable/live/previews/p.html
+packages/ui/.impeccable/live/manual-edit-events.jsonl
+.claude/skills/impeccable/scripts/.impeccable/hook.cache.json
+
+# --- other agents ---
+.aider.chat.history.md
+.aider.input.history
+.aider.tags.cache.v4/index
+.crush/crush.db
+.crush/logs/crush.log
+.roo/mcp.json
+.kilocode/mcp.json
+kilo.jsonc
+.kiro/settings/mcp.json
+.amazonq/mcp.json
+.junie/config.json
+.junie/mcp/mcp.json
+.continue/.env
+.goose/memory/project.md
+.goose/ralph/state.json
+.specstory/history/2026-07-26.md
+CRUSH.local.md
+.idea/workspace.xml
+.idea/httpRequests/req.http
+http-client.private.env.json
+
+# --- spec tooling ---
+_bmad/config.user.toml
+# regression: top-level *.user.toml beyond config — an earlier draft only
+# covered _bmad/config.user.toml and missed this
+_bmad/agent.user.toml
+_bmad/custom/agent.user.toml
+.specify/extensions/ext/local-config.yml
+.specify/feature.json
+.memlog.md
+.taskmaster/state.json
+.taskmaster/reports/complexity.json
+
+# --- model weights ---
+model.safetensors
+llama-7b.gguf
+model.onnx
+pytorch_model.bin
+pytorch_model-00001-of-00002.bin
+tf_model.h5
+encoder.weights.h5
+net.keras
+step-500.ckpt.index
+step-500.ckpt.data-00000-of-00001
+embeddings.npy
+pipeline.joblib
+converted.mlpackage/Manifest.json
+weights/final.pt
+checkpoints/epoch3.pt
+saved_model/saved_model.pb
+
+# --- hf cache in-repo ---
+.cache/huggingface/download/x.metadata
+vendor/models/.cache/huggingface/blobs/abc
+model.safetensors.incomplete
+
+# --- vector stores ---
+chroma.sqlite3
+chroma/index/data_level0.bin
+.chroma/x
+chroma_db/y
+vectors.lance/data/f.lance
+faiss_index/index.faiss
+vectorstore/index.pkl
+qdrant_data/meta.json
+milvus_demo.db
+milvus_demo.db.lock
+storage/docstore.json
+storage/index_store.json
+storage/default__vector_store.json
+
+# --- experiment tracking ---
+wandb/run-20260726_120000-abc/logs/debug.log
+.wandb/x
+mlruns/0/meta.yaml
+mlartifacts/0/model
+mlflow.db
+events.out.tfevents.1234.host
+runs/exp1/events
+logs/train.log
+.aim/index
+.neptune/offline/run.log
+clearml.conf
+.comet.config
+.cometml-runs/r1
+outputs/2026-07-26/13-01-22/run.log
+multirun/0/0/x
+
+# --- llm framework state ---
+.langchain.db
+.litellm_cache/cache.db
+litellm_uuid.txt
+.instructor_cache/c
+.ollama/models/blobs/sha
+.streamlit/secrets.toml
+.files/upload.bin
+.chainlit/translations/en.json
+.gradio/cached_examples/log.csv
+gradio_cached_examples/x
+flagged/log.csv
+.deepeval/.deepeval
+.deepeval-cache.json
+.deepeval_telemetry.txt
+.temp_test_run_data.json
+.inspect-logs/2026-07-26.eval
+
+# --- browser / agent runtime ---
+playwright/.auth/user.json
+test-results/failed-1.png
+playwright-report/index.html
+blob-report/report.zip
+playwright/.cache/x
+.playwright-mcp/shot.png
+agent_history.gif
+saved_trajectories/t1.json
+AgentHistory.json
+browser_cookies.json
+cookies.json
+temp-profile-abc/prefs.js
+cypress/videos/spec.mp4
+cypress/screenshots/spec/fail.png
+
+# --- python ---
+__pycache__/mod.cpython-312.pyc
+.venv/bin/python
+venv/bin/activate
+.pytest_cache/CACHEDIR.TAG
+.ruff_cache/0.4.0/x
+.mypy_cache/3.12/mod.json
+.ipynb_checkpoints/nb-checkpoint.ipynb
+src/.ipynb_checkpoints/nb-checkpoint.ipynb
+htmlcov/index.html
+.coverage
+coverage.xml
+mypkg.egg-info/PKG-INFO
+.pdm-python
+
+# --- javascript ---
+node_modules/left-pad/index.js
+dist/bundle.js
+build/main.js
+out/index.html
+coverage/lcov.info
+tsconfig.tsbuildinfo
+.eslintcache
+.next/build-manifest.json
+next-env.d.ts
+.nuxt/app.config.mjs
+.svelte-kit/generated/root.js
+.astro/types.d.ts
+.angular/cache/17/x
+.turbo/cookies/1.cookie
+.vercel/project.json
+.wrangler/state/v3/kv
+.pnp.cjs
+.yarn/cache/left-pad.zip
+.yarn/unplugged/pkg/x
+
+# --- datasets ---
+data/raw/dump.csv
+data/interim/clean.parquet
+data/external/vendor.json
+train.parquet
+shard.feather
+
+# --- os ---
+.DS_Store
+Thumbs.db
+notes.txt~
+.vimrc.swp

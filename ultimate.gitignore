@@ -1,0 +1,750 @@
+# ==============================================================================
+#  THE ULTIMATE .gitignore FOR AI DEVELOPMENT
+#  Built 2026-07-26. Every non-obvious entry verified against official docs or
+#  the tool's own source. Entries marked [?] are convention, not documented.
+#  Every pattern is exercised by a `git check-ignore` test suite — source,
+#  tests and updates: https://github.com/vikichand/ultimate-gitignore-ai
+# ==============================================================================
+#
+#  THE ONE RULE THAT MATTERS
+#  -------------------------
+#  Do NOT blanket-ignore dot-folders. `.claude/`, `.cursor/`, `.windsurf/`,
+#  `.specify/`, `.kiro/` are AUTHORED TEAM CONFIG that vendors explicitly tell
+#  you to commit. Ignoring them throws away your team's agent setup.
+#
+#  Sort every AI artifact into one of three buckets:
+#
+#    1. TEAM INTENT      -> COMMIT.  Rules, skills, agents, commands, hooks,
+#                                    prompts, specs. Human-authored. Reviewable
+#                                    in a PR. Everyone benefits.
+#    2. PER-DEV OVERRIDE -> IGNORE.  Anything named *.local.*, *.user.*,
+#                                    settings.local.json, CLAUDE.local.md.
+#    3. MACHINE STATE    -> IGNORE.  Caches, transcripts, screenshots, session
+#                                    state, DBs, secrets. Regenerable or private.
+#
+#  SYNTAX WARNING: git only treats `#` as a comment at the START of a line.
+#  `*.jks   # some note` is a pattern that matches nothing. Every comment in
+#  this file is therefore on its own line. Keep it that way when you edit.
+#
+#  Test any file with:  git check-ignore -v <path>
+#  Already committed something? .gitignore won't untrack it: git rm --cached <p>
+#
+#  PATTERNS DELIBERATELY NOT IN THIS FILE (they cause silent data loss):
+#    *.bin        matches the node_modules/.bin DIRECTORY. Negation can't help.
+#    *.key        eats i18n .key files and Apple Keynote decks.
+#    *.lock       eats Cargo.lock, poetry.lock, uv.lock, flake.lock.
+#    .terraform*  eats .terraform.lock.hcl, which HashiCorp says to commit.
+#    *.sql        eats your migrations.
+#    *.csv        eats test fixtures and seed data.
+#    *.json       eats package.json and tsconfig.json.
+#    models/      is source code in Django, Rails, SQLAlchemy, FastAPI.
+#    storage/     is a first-class committed directory in Laravel.
+#    *.h5         is the standard scientific data container, not just Keras.
+#    *.crt *.cer  are PUBLIC certificates that CI needs.
+#
+# ==============================================================================
+
+
+# ==============================================================================
+#  1. SECRETS  --  the only section you must not trim
+# ==============================================================================
+
+# --- Environment files --------------------------------------------------------
+# `.env` and `.env.*` are file patterns (no directory is excluded), which is
+# why the negations below actually work.
+# VITE USERS: Vite expects .env and .env.[mode] to be COMMITTED (non-secret
+# build-time defaults) and only *.local to be ignored. Check before applying.
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+!.env.*.example
+.envrc
+
+# --- Keys and certs -----------------------------------------------------------
+# *.jks / *.keystore / *.ppk are [?] convention. Android DEBUG keystores are
+# sometimes committed on purpose — drop those three lines if that's you.
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.ppk
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+!*.pub
+secring.*
+*.gpg
+*.pgp
+# NOT ignored on purpose: *.crt *.cer *.der *.asc — public certs and detached
+# release signatures that are meant to be published.
+
+# --- Credential files ---------------------------------------------------------
+# credentials.json and token.json are the official Google quickstart filenames
+# (OAuth client secret and refresh token). Both collide with benign names —
+# token.json is also a common frontend design-token file. Check before adopting.
+.netrc
+_netrc
+.git-credentials
+.pypirc
+.vault-token
+.kube/config
+*.kubeconfig
+.docker/config.json
+.aws/credentials
+.config/gcloud/
+application_default_credentials.json
+credentials.json
+token.json
+client_secret*.json
+service-account*.json
+sops/age/keys.txt
+# google-github-actions/auth writes this INTO $GITHUB_WORKSPACE at runtime.
+# Their README tells you to add it here. Active leak vector.
+gha-creds-*.json
+# NOT ignored: .npmrc — very commonly committed on purpose (registry URL,
+# save-exact). Keep tokens in ${NPM_TOKEN} instead of ignoring the file.
+
+# --- Rails --------------------------------------------------------------------
+# Official split: credentials.yml.enc is encrypted -> COMMIT. The key -> NEVER.
+/config/master.key
+/config/credentials/*.key
+
+# --- Terraform (verbatim from github/gitignore/Terraform.gitignore) -----------
+# COMMIT .terraform.lock.hcl — HashiCorp: "include this file in your version
+# control repository so that you can discuss potential changes ... via review."
+.terraform/
+*.tfstate
+*.tfstate.*
+.terraform.tfstate.lock.info
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+# *.tfvars is contested. github/gitignore ignores it; HashiCorp says only "if
+# it contains sensitive values." Blanket-ignoring breaks the very common
+# environments/prod.tfvars pattern that holds only region/CIDR/instance-size.
+# Uncomment only if yours hold secrets:
+# *.tfvars
+# *.tfvars.json
+
+
+# ==============================================================================
+#  2. CLAUDE CODE
+#  Official docs give every file in .claude/ an explicit Commit yes/no.
+#  Almost all of it is YES. These four lines are the complete "no" list.
+# ==============================================================================
+
+# "not checked in ... personal preferences and experimentation."
+# Claude Code auto-ignores this in your GLOBAL ~/.config/git/ignore, which
+# teammates never see. Docs: "To share the ignore rule with your team, also add
+# it to the project .gitignore." That is what this line is for.
+.claude/settings.local.json
+
+# memory: local scope — "shouldn't be checked into version control"
+.claude/agent-memory-local/
+
+# "Add CLAUDE.local.md to your .gitignore so it isn't committed."
+CLAUDE.local.md
+
+# Generated subdirs inside committed skills. First-party precedent:
+# anthropics/claude-cookbooks ignores exactly this while committing the
+# SKILL.md sitting right above it.
+.claude/skills/*/tmp/
+
+# --- COMMIT ALL OF THIS (listed so nobody "cleans it up") ---------------------
+#   CLAUDE.md                    AGENTS.md
+#   .mcp.json          <- "designed to be checked into version control".
+#                         Use ${VAR} expansion, never literal keys.
+#   .worktreeinclude
+#   .claude/settings.json  <- "checked into source control and shared with your
+#                             team"
+#   .claude/skills/**      <- "Project skills: Commit .claude/skills/ to
+#                             version control"
+#   .claude/agents/**      <- "Check them into version control so your team can
+#                             use and improve them collaboratively"
+#   .claude/commands/**   .claude/rules/**   .claude/output-styles/**
+#   .claude/workflows/**  .claude/hooks/**   .claude/agent-memory/**
+#
+# Plugins never touch your repo — marketplace plugins are cached in
+# ~/.claude/plugins/cache. All session transcripts, todos, file-history,
+# shell-snapshots and debug logs live in ~/.claude/, never in the project.
+# So there is nothing else to ignore here. Really.
+#
+# Security note from the docs, worth reading before you trust a cloned repo:
+# "Review project skills before trusting a repository, since a skill can grant
+# itself broad tool access."
+
+
+# ==============================================================================
+#  3. IMPECCABLE  (pbakaus/impeccable — design skill)
+#
+#  ANSWER: it is a SPLIT folder, not all-or-nothing. On a team you commit the
+#  shared design spec and ignore the screenshots and session state.
+#
+#  The block between the markers is VERBATIM from the project's README section
+#  titled "Keeping .impeccable out of git", kept intact so you can refresh it on
+#  upgrade using the markers.
+#
+#  BUG IN THEIR README, verified with `git check-ignore` on git 2.43:
+#  the block's own comment claims the patterns are "unanchored" so they catch
+#  apps/web/.impeccable/ in a monorepo. They do not. A git pattern containing a
+#  slash anywhere except the end is relative to the .gitignore's directory, so
+#  every line below is root-anchored and a monorepo copy is silently MISSED.
+#  The supplement after the block fixes that. Keep it if you use a monorepo.
+# ==============================================================================
+
+# impeccable-ignore-start
+# Ephemeral output, runtime state, and per-dev overrides.
+# Shared artifacts stay tracked: config.json, live/config.json,
+# design.json, critique/*.md.
+.impeccable/config.local.json
+.impeccable/hook.cache.json
+.impeccable/hook.pending.json
+.impeccable/*.png
+.impeccable/live/server.json
+.impeccable/live/sessions/
+.impeccable/live/previews/
+.impeccable/live/annotations/
+.impeccable/live/cache/
+.impeccable/live/manual-edit-apply-transaction.json
+.impeccable/live/manual-edit-events.jsonl
+.impeccable/live/manual-edit-evidence/
+.impeccable/live/pending-manual-edits.json
+.impeccable/live/deferred-svelte-component-accepts.json
+.impeccable/live/*.png
+# impeccable-ignore-end
+
+# Monorepo supplement — the `**/` prefix is what actually makes these match at
+# any depth (apps/web/.impeccable/, packages/ui/.impeccable/, ...).
+**/.impeccable/config.local.json
+**/.impeccable/hook.*.json
+**/.impeccable/*.png
+**/.impeccable/live/server.json
+**/.impeccable/live/sessions/
+**/.impeccable/live/previews/
+**/.impeccable/live/annotations/
+**/.impeccable/live/cache/
+**/.impeccable/live/manual-edit-*
+**/.impeccable/live/pending-manual-edits.json
+**/.impeccable/live/deferred-svelte-component-accepts.json
+**/.impeccable/live/*.png
+
+# Second, nested copy created inside generated harness skill dirs
+**/skills/impeccable/scripts/.impeccable/
+
+# COMMIT: .impeccable/config.json (shared config), .impeccable/design.json
+#         (design spec), .impeccable/live/config.json (framework wiring),
+#         and PRODUCT.md + DESIGN.md at the repo root.
+#
+# JUDGEMENT CALL — .impeccable/critique/ : the README says keep the reports
+# tracked; the project's own repo ignores them except ignore.md. Their guidance
+# contradicts itself. Pick one. Uncomment to follow the stricter repo behaviour:
+# .impeccable/critique/
+# !.impeccable/critique/ignore.md
+#
+# If you installed Impeccable as a git submodule (`git submodule add ...
+# .impeccable`), the folder is the whole cloned repo, not runtime state.
+# Check .gitmodules before applying any of this.
+
+
+# ==============================================================================
+#  4. OTHER AI CODING AGENTS
+#  Same split everywhere: rules and skills COMMIT, mcp.json and *.local.* IGNORE.
+# ==============================================================================
+
+# --- Aider --------------------------------------------------------------------
+# Aider auto-appends `.aider*` itself unless you pass --no-gitignore.
+# .aider.chat.history.md and .aider.input.history are FULL TRANSCRIPTS of
+# everything you typed, including anything you pasted. .aider.conf.yml can hold
+# API keys. The glob also swallows .aiderignore, hence the negation.
+.aider*
+!.aiderignore
+# Un-comment only if your conf contains NO api keys:
+# !.aider.conf.yml
+
+# --- Charm Crush --------------------------------------------------------------
+# The only agent that writes a conversation SQLite DB INSIDE your repo.
+# .crush/crush.db holds every prompt and reply plus full file-content snapshots.
+# It self-ignores lazily (only after first run) — do not rely on that.
+.crush/
+
+# --- MCP configs that hold API keys -------------------------------------------
+# Vendor examples for these literally inline `"API_KEY": "..."` or
+# `postgresql://USER:PASSWORD@HOST`. Prefer ${env:VAR} and commit; ignore if not.
+.roo/mcp.json
+.kilocode/mcp.json
+.kilo/kilo.jsonc
+kilo.jsonc
+.kiro/settings/mcp.json
+.amazonq/mcp.json
+.junie/mcp/mcp.json
+.junie/config.json
+# Cursor's docs never state commit-or-not for this one. Uncomment unless every
+# value uses ${env:...}:
+# .cursor/mcp.json
+# VS Code explicitly SAYS to commit .vscode/mcp.json: "Include this file in
+# source control to share MCP server configurations with your team."
+
+# --- Per-developer overrides and agent scratch state --------------------------
+.continue/.env
+.goose/memory/
+.goose/ralph/
+CRUSH.local.md
+GEMINI.local.md
+# SpecStory does NOT self-ignore transcripts, only ai_rules_backups. These can
+# contain anything you pasted into chat.
+.specstory/history/
+
+# --- Spec-driven tooling ------------------------------------------------------
+# BMAD v6 uses _bmad/ — UNDERSCORE, not dot. A `.bmad*` glob silently misses
+# all of it. Only the *.user.toml personal overrides are ignored. Two lines
+# because `*` does not cross `/`.
+.specify/extensions/.cache/
+.specify/extensions/.backup/
+.specify/extensions/*/local-config.yml
+.specify/extensions/*/*-config.local.yml
+.specify/feature.json
+_bmad/*.user.toml
+_bmad/custom/*.user.toml
+.memlog.md
+.taskmaster/state.json
+.taskmaster/reports/
+
+# --- JetBrains (their official list is only the first three) ------------------
+# .idea/httpRequests holds request history: "passwords, tokens, certificates".
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/shelf/
+.idea/httpRequests/
+http-client.private.env.json
+
+# --- COMMIT ALL OF THIS -------------------------------------------------------
+#   AGENTS.md  (23 tools read it) + every nested AGENTS.md
+#   .cursor/rules/**   "Check your rules into git so your whole team benefits"
+#   .cursorignore  .cursorindexingignore  .cursor/skills/  .cursor/commands/
+#   .cursor/hooks.json  .cursor/environment.json  .cursor/BUGBOT.md
+#   .github/copilot-instructions.md  .github/instructions/**  .github/prompts/**
+#   .github/agents/*.agent.md  .github/chatmodes/*.chatmode.md  (legacy)
+#   .codex/config.toml  .codex/hooks.json   <- Codex DOES have a project dir
+#   .gemini/settings.json  GEMINI.md  .geminiignore  .gemini/commands/
+#   .aiexclude                              <- Google IDEs only, NOT Gemini CLI
+#   .windsurf/rules/  .windsurf/workflows/  .windsurf/skills/  .codeiumignore
+#   .clinerules/  .cline/  .clineignore
+#   .roo/rules/  .roomodes  .rooignore  .kilo/rules/  .kilo/commands/
+#   .continue/rules/  .zed/settings.json  .goosehints  .goose/recipes/
+#   .junie/AGENTS.md  .amp/  .opencode/  opencode.json
+#   .kiro/specs/  .kiro/steering/  <- "Specs are designed to be
+#                                     version-controlled"
+#   .specify/  specs/  _bmad/  .taskmaster/config.json  .taskmaster/tasks/
+#   CONVENTIONS.md  <- aider's official one; aider has no AGENTS.md support
+#
+# THESE DO NOT EXIST. Do not paste them in from blog posts:
+#   .copilotignore   .windsurfignore   .aiexclude (for Copilot)
+#   .claude/conversations/  .claude/sessions/  .claude/checkpoints/
+#   .promptfoo/  .e2b/  .inspect/  .langchain/  .llamaindex  .milvus_lite
+
+
+# ==============================================================================
+#  5. MODEL WEIGHTS AND ML ARTIFACTS
+# ==============================================================================
+
+# --- Safe wholesale: single-purpose extensions, near-zero false positives -----
+*.safetensors
+*.gguf
+*.gguf.json
+*.onnx
+*.tflite
+*.msgpack
+*.ot
+*.npz
+*.mlmodel
+# .mlpackage is a DIRECTORY (Manifest.json + Data/), hence the slash.
+*.mlpackage/
+
+# --- Ignore with care ---------------------------------------------------------
+# *.pth COLLIDES with Python's own site .pth path-configuration files and with
+# editable installs (__editable__*.pth). Drop it if you ship those.
+# TF checkpoints: .ckpt is a PREFIX, not a file, hence the three variants.
+*.pt
+*.pth
+*.ckpt
+*.ckpt.index
+*.ckpt.data-*
+*.ckpt.meta
+*.npy
+*.joblib
+*.pkl
+
+# --- Scoped instead of globbed (see the danger list at the top) ---------------
+# Use /weights/ or /checkpoints/ as your model dir rather than /models/, which
+# is source code in Django, Rails, SQLAlchemy and FastAPI.
+pytorch_model.bin
+pytorch_model-*.bin
+model-*-of-*.bin
+tf_model.h5
+*.weights.h5
+*.keras
+saved_model.pb
+fingerprint.pb
+/saved_model/
+/checkpoints/
+/weights/
+
+# --- HuggingFace caches that land IN the repo ---------------------------------
+# `hf download --local-dir X` creates X/.cache/huggingface/. HF's claim that it
+# is "automatically ignored by git" only holds when X is itself a Hub clone.
+# A relative HF_HOME (common in Dockerfiles) also drops the cache into CWD.
+# The `**/` form matches at the root as well as any depth, so one line covers
+# both — and the dir exclusion already covers every .lock file inside it.
+**/.cache/huggingface/
+*.incomplete
+
+
+# ==============================================================================
+#  6. VECTOR STORES AND LOCAL DBs
+#  Rule: ignore the one named data dir your code passes, not internal filenames.
+# ==============================================================================
+
+# Chroma's PersistentClient default is "./chroma" per source; the docs say
+# ".chroma" and are wrong. Ignore both.
+/chroma/
+/.chroma/
+/chroma_db/
+chroma.sqlite3
+# LanceDB tables are DIRECTORIES named <table>.lance
+*.lance/
+/.lancedb/
+# FAISS enforces no extension — ignore the containing dir, never *.index/*.pkl
+/faiss_index/
+/vectorstore/
+# qdrant local `path` has no default; rename yours to match or edit this
+/qdrant_data/
+# never a bare *.db — that eats SQLite fixtures and seeded test DBs
+milvus*.db
+milvus*.db.lock
+vec0.so
+vec0.dylib
+vec0.dll
+# Weaviate embedded (~/.local/share) and pgvector (server-side) write nothing
+# into your repo. No pattern needed for either.
+
+# --- LlamaIndex default persist dir -------------------------------------------
+# DEFAULT_PERSIST_DIR = "./storage". Scoped to filenames because a bare
+# `storage/` would nuke Laravel's committed storage/ tree.
+/storage/docstore.json
+/storage/index_store.json
+/storage/*vector_store.json
+/storage/graph_store.json
+
+
+# ==============================================================================
+#  7. EXPERIMENT TRACKING AND LLM FRAMEWORK STATE
+# ==============================================================================
+
+# Both are real: WANDB_DIRS = ("wandb", ".wandb"). wandb only writes its own
+# gitignore from the `wandb init` CLI, never from wandb.init() in Python.
+wandb/
+.wandb/
+mlruns/
+mlartifacts/
+mlflow.db
+# Prefer the tfevents glob over /runs/ — it survives log_dir overrides.
+events.out.tfevents.*
+# /runs/ and /logs/ are HIGH false-positive risk. Anchored so they only hit the
+# repo root. Delete both if your repo has a real logs/ or runs/ package.
+/runs/
+/logs/
+.aim/
+.neptune/
+# clearml.conf holds api.credentials.access_key and secret_key. Default is ~/,
+# but copying it into a project for CI/Docker is exactly how it leaks.
+clearml.conf
+.comet.config
+comet.config
+.cometml-runs/
+# Hydra. Shape-scoped to the timestamp dirs so it can't eat a real outputs/.
+/outputs/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]/
+/multirun/
+
+# DVC: do NOT add .dvc/ or *.dvc here — that BREAKS DVC by excluding its own
+# pointer files. `dvc init` writes .dvc/.gitignore (/config.local, /tmp, /cache).
+# COMMIT: .dvc/config, *.dvc, dvc.yaml, dvc.lock, .dvcignore, DVC's gitignores.
+
+# SQLiteCache default. There is no .langchain/ directory — don't invent one.
+.langchain.db
+.litellm_cache/
+litellm_uuid.txt
+.instructor_cache/
+# Ollama is home-dir by default; this appears in-repo only via a docker
+# bind-mount or a relative OLLAMA_MODELS. Zero-risk insurance.
+.ollama/
+# NOT all of .streamlit/ — config.toml is project config teams commit.
+.streamlit/secrets.toml
+# Chainlit mkdir's .files/ unconditionally at import.
+# NOT all of .chainlit/ — config.toml is generated config teams commit.
+.files/
+.chainlit/translations/
+.gradio/
+gradio_cached_examples/
+/flagged/
+# .deepeval/.deepeval holds CONFIDENT_API_KEY. Older installs have bare
+# top-level copies that were later migrated into the dir.
+.deepeval/
+.deepeval
+.deepeval-cache.json
+.deepeval_telemetry.txt
+.temp_test_run_data.json
+.latest_test_run.json
+# Inspect AI defaults to ./logs — set INSPECT_LOG_DIR=./.inspect-logs instead of
+# adding a bare logs/ pattern.
+.inspect-logs/
+# Home-dir only, nothing to ignore: DSPy (~/.dspy_cache), CrewAI (appdirs),
+# promptfoo (~/.promptfoo), Phoenix (~/.phoenix), Modal, e2b, Haystack, Ray Tune.
+
+
+# ==============================================================================
+#  8. BROWSER AND AGENT RUNTIME
+# ==============================================================================
+
+# Playwright — verbatim from create-playwright's own _patchGitIgnore().
+# playwright/.auth/ holds LIVE SESSION COOKIES. Treat it as equal to .env.
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+# Playwright MCP output: screenshots, PDFs, traces, videos.
+.playwright-mcp/
+
+# browser-use. Its agent working dir is /tmp, not the project — these are the
+# artifacts that actually land in your repo.
+agent_history.gif
+saved_trajectories/
+AgentHistory.json
+AgentHistoryList.json
+temp-profile-*
+browser_cookies.json
+cookies.json
+gcp-login.json
+
+# Cypress defaults. Never ignore all of cypress/ — fixtures and support are source.
+/cypress/videos/
+/cypress/screenshots/
+/cypress/downloads/
+
+# VCR / pytest-recording cassettes are meant to be COMMITTED — but they are
+# verbatim HTTP recordings. Unfiltered, they contain `Authorization: Bearer sk-`.
+# Do not ignore them. Add filter_headers=["authorization"] to a conftest fixture
+# and run a secret scanner over **/cassettes/**.
+
+
+# ==============================================================================
+#  9. PYTHON
+# ==============================================================================
+
+# The `z` in py[codz] is canonical github/gitignore and catches built PEP 441
+# zipapps (foo.pyz). If you deliberately commit a .pyz, change this to *.py[cod].
+__pycache__/
+*.py[codz]
+*$py.class
+*.so
+.Python
+/build/
+/develop-eggs/
+/dist/
+/downloads/
+/eggs/
+/.eggs/
+/sdist/
+/wheels/
+/parts/
+/var/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+# Deliberately NOT taken from github/gitignore's Python template, because they
+# are unanchored and eat source: lib/ lib64/ env/ target/ *.spec *.mo *.pot
+
+# Testing and linting
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+cython_debug/
+
+# Environments
+.venv
+.venv*/
+venv/
+venv*/
+ENV/
+.conda/
+
+# Notebooks
+# .ipynb_checkpoints has no trailing slash on purpose — matches at any depth.
+.ipynb_checkpoints
+.virtual_documents/
+# NEVER ignore *.ipynb. The one sanctioned exception is jupytext, which
+# regenerates them from paired .py files. To strip outputs use nbstripout —
+# that is a .gitattributes FILTER, not a gitignore entry, and every clone must
+# run `nbstripout --install` by design (to prevent arbitrary code on clone).
+
+# Lockfiles: COMMIT ALL OF THEM. uv: "should be checked into version control."
+# pipenv: "Both files should be committed." pdm and pixi say the same. Poetry is
+# the only upstream that discusses omitting for libraries, and it prefers a
+# regular refresh over omission.
+.pdm-python
+.pdm-build/
+.pixi/*
+!.pixi/config.toml
+__pypackages__/
+
+
+# ==============================================================================
+#  10. JAVASCRIPT / TYPESCRIPT
+# ==============================================================================
+
+node_modules/
+/dist/
+/dist-ssr/
+/build/
+/out/
+/coverage/
+.nyc_output
+*.tsbuildinfo
+.eslintcache
+.parcel-cache
+*.local
+
+# Frameworks — each taken from the vendor's own template.
+# Next.js REVERSED its next-env.d.ts guidance: "Add it to .gitignore. If your
+# project already tracks the file, remove it from Git." Keep it in tsconfig.
+/.next/
+next-env.d.ts
+/.nuxt/
+/.output/
+/.nitro/
+/.svelte-kit/
+/.astro/
+/.react-router/
+# Angular ignores /.angular/cache, NOT /.angular/. Be precise.
+/.angular/cache
+/.docusaurus/
+.turbo
+.vercel
+.netlify
+# Cloudflare has the strongest wording of any deploy tool: the local persistence
+# folder "should be added to your .gitignore to avoid committing local
+# development data."
+.wrangler/
+
+# Yarn Berry — NON-zero-installs variant. If you use Zero-Installs, swap for:
+#   .yarn/*  !.yarn/cache  !.yarn/patches  !.yarn/plugins  !.yarn/releases
+#   !.yarn/sdks  !.yarn/versions
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# COMMIT every lockfile — package-lock.json, pnpm-lock.yaml, yarn.lock, bun.lock.
+# Yarn is explicit: "should always be stored within your repository (even if you
+# develop a library)." The "libraries shouldn't" belief is a misreading of npm's
+# rule about PUBLISHING npm-shrinkwrap.json, which is a different thing.
+
+
+# ==============================================================================
+#  11. DATASETS
+#  Scope by PATH, never by extension. *.csv eats fixtures, seeds and golden files.
+#  Git negation cannot re-include anything under an excluded directory — and even
+#  `dir/**` breaks it unless you also add `!dir/**/`. Hence the /** form below,
+#  which is the only shape that keeps .gitkeep alive.
+# ==============================================================================
+
+/data/raw/**
+!/data/raw/.gitkeep
+/data/interim/**
+!/data/interim/.gitkeep
+/data/external/**
+!/data/external/.gitkeep
+# Cookiecutter Data Science ships `/data/` with no negations AND ships .gitkeep
+# files — so its own data tree does not survive a fresh clone. The form above
+# fixes that bug. For anything over 50 MiB use Git LFS (GitHub warns at 50 MiB,
+# hard-blocks at 100). A path cannot be both LFS-tracked and gitignored —
+# gitignore wins and the file is never staged.
+
+*.parquet
+*.feather
+*.arrow
+*.orc
+*.avro
+# NOT ignored on purpose: *.jsonl — LLM eval sets are usually .jsonl and SHOULD
+# be committed. Add it back only if yours are generated.
+
+
+# ==============================================================================
+#  12. OS AND EDITOR
+# ==============================================================================
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+*~
+*.swp
+*.swo
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/mcp.json
+
+
+# ==============================================================================
+#  APPENDIX — .gitignore is not a security control
+#
+#  It only prevents FUTURE adds. A secret already committed stays in history,
+#  reachable via reflog, forks, clones, PR refs and GitHub's cross-fork object
+#  storage. Order of operations when one leaks:
+#    1. ROTATE the secret first. Always first.
+#    2. git rm --cached <path>  +  add the ignore rule
+#    3. Rewrite history with git filter-repo (GitHub's current docs name
+#       filter-repo v2.47+; BFG is no longer mentioned)
+#    4. Contact GitHub Support to purge caches and forks
+#    5. Enable push protection + gitleaks/trufflehog — those are the real control
+#
+#  Also: .gitignore does not stop an AI agent reading a file off disk. Agents
+#  scan the filesystem, not the git index. Mirror your secret patterns into the
+#  tool-native exclusion files, which are DIFFERENT per vendor:
+#    Cursor      .cursorignore (blocks access) / .cursorindexingignore (index only)
+#    Gemini CLI  .geminiignore          Gemini IDEs  .aiexclude
+#    Windsurf    .codeiumignore         Cline  .clineignore    Roo  .rooignore
+#    JetBrains   .aiignore              Copilot  server-side content exclusion only
+# ==============================================================================

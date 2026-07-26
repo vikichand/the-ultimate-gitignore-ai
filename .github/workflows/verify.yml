@@ -1,0 +1,36 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Monthly. Vendors move paths (BMAD .bmad-core -> _bmad, Kilo .kilocode ->
+    # .kilo). A scheduled run won't catch that on its own, but it does keep the
+    # badge honest and surfaces any git behaviour change on newer runners.
+    - cron: '0 6 1 * *'
+
+jobs:
+  verify:
+    name: git check-ignore assertions
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: git version
+        run: git --version
+
+      - name: Run assertion suite
+        run: ./verify.sh
+
+  shellcheck:
+    name: shellcheck verify.sh
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: shellcheck verify.sh

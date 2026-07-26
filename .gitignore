@@ -1,0 +1,21 @@
+# This repo's own .gitignore. It is deliberately NOT the artifact.
+#
+# The artifact is ultimate.gitignore, kept as a separate file for the same
+# reason github/gitignore keeps Python.gitignore separate: a repo whose own
+# .gitignore is the template ends up ignoring its own test fixtures.
+# Spec Kit and BMAD both hit that trap and had to write "these lines are for
+# dogfooding, do not copy them" into their files. This avoids it.
+
+.DS_Store
+Thumbs.db
+*~
+*.swp
+
+# Agent config for working on this repo. Per the file's own rule: personal
+# overrides out, team intent in.
+.claude/settings.local.json
+CLAUDE.local.md
+.idea/workspace.xml
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
