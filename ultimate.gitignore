@@ -3,7 +3,7 @@
 #  Built 2026-07-26. Every non-obvious entry verified against official docs or
 #  the tool's own source. Entries marked [?] are convention, not documented.
 #  Every pattern is exercised by a `git check-ignore` test suite — source,
-#  tests and updates: https://github.com/vikichand/ultimate-gitignore-ai
+#  tests and updates: https://github.com/vikichand/the-ultimate-gitignore-ai
 # ==============================================================================
 #
 #  THE ONE RULE THAT MATTERS

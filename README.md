@@ -1,6 +1,6 @@
 # The Ultimate .gitignore for AI Development
 
-[![verify](https://github.com/vikichand/ultimate-gitignore-ai/actions/workflows/verify.yml/badge.svg)](https://github.com/vikichand/ultimate-gitignore-ai/actions/workflows/verify.yml)
+[![verify](https://github.com/vikichand/the-ultimate-gitignore-ai/actions/workflows/verify.yml/badge.svg)](https://github.com/vikichand/the-ultimate-gitignore-ai/actions/workflows/verify.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![assertions](https://img.shields.io/badge/assertions-332-brightgreen.svg)](tests/)
 
@@ -13,13 +13,13 @@ Every non-obvious entry is traced to an official doc or the tool's own source. T
 ## Quickstart
 
 ```bash
-curl -o .gitignore https://raw.githubusercontent.com/vikichand/ultimate-gitignore-ai/main/ultimate.gitignore
+curl -o .gitignore https://raw.githubusercontent.com/vikichand/the-ultimate-gitignore-ai/main/ultimate.gitignore
 ```
 
 Appending to one you already have:
 
 ```bash
-curl -s https://raw.githubusercontent.com/vikichand/ultimate-gitignore-ai/main/ultimate.gitignore >> .gitignore
+curl -s https://raw.githubusercontent.com/vikichand/the-ultimate-gitignore-ai/main/ultimate.gitignore >> .gitignore
 ```
 
 Then run the one check that matters. This lists files already tracked in git that your new rules would ignore — the silent-breakage case:
