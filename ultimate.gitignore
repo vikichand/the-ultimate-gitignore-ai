@@ -754,27 +754,36 @@ desktop.ini
 #    JetBrains   .aiignore              Copilot  server-side content exclusion only
 # ==============================================================================
 # ==============================================================================
-#  TEAM POLICY  --  opt-in, and it belongs OUTSIDE the markers
+#  TEAM POLICY  --  the opt-in tail
 # ==============================================================================
 #
-#  Some teams keep agent rules and planning notes out of the repo entirely.
-#  That is a policy choice, not a default: AGENTS.md and CLAUDE.md are team
-#  intent, Anthropic documents committing CLAUDE.md, and the whole point of the
-#  AGENTS.md standard is that a clone carries its own rules. Cloud agents, CI,
-#  and code-review bots only ever see what is committed. So this file tracks
-#  them, and opting out is deliberate.
+#  This file TRACKS AGENTS.md, CLAUDE.md and .claude/. They are team intent,
+#  Anthropic documents committing CLAUDE.md, and cloud agents, CI and review
+#  bots only ever see what is committed, so a rules file that lives on one
+#  laptop helps nobody else. Opting out is a policy choice, not a default.
 #
-#  To opt out, COPY these lines BELOW the :END marker, not here. Anything inside
-#  the markers is replaced wholesale by update.sh; anything outside it survives.
+#  Keeping agent rules and planning notes out of the repo? Uncomment these:
 #
-#    AGENTS.md
-#    CLAUDE.md
-#    GEMINI.md
-#    plan.md
-#    plans/
-#    *.plan.md
+# AGENTS.md
+# CLAUDE.md
+# GEMINI.md
+# plan.md
+# plans/
+# *.plan.md
+#
+#  Careful with plans: throwaway implementation notes are fine to drop, but
+#  specs/, .specify/ and _bmad/ are spec-driven SOURCE OF TRUTH and are tracked
+#  on purpose. A blanket plans/ can eat a team's spec directory.
 #
 #  Already committed one? .gitignore will not untrack it: git rm --cached <path>
-# ==============================================================================
+#
+#  EDITING THIS SECTION: everything above is still INSIDE the markers, so
+#  update.sh replaces it wholesale. Rules that must survive an update belong
+#  BELOW the :END marker at the bottom of this file.
 
+# Personal document dumps: notes, PDFs, research scraps and other material that
+# belongs on your disk and never in the remote. Rename to match your own folder.
+myDocs/
+
+# ==============================================================================
 # <<< the-ultimate-gitignore-ai:END

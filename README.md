@@ -2,7 +2,7 @@
 
 [![verify](https://github.com/vikichand/the-ultimate-gitignore-ai/actions/workflows/verify.yml/badge.svg)](https://github.com/vikichand/the-ultimate-gitignore-ai/actions/workflows/verify.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![assertions](https://img.shields.io/badge/assertions-333-brightgreen.svg)](tests/)
+[![assertions](https://img.shields.io/badge/assertions-336-brightgreen.svg)](tests/)
 
 A `.gitignore` for repos where people and coding agents share a working directory.
 
@@ -17,8 +17,6 @@ curl -o .gitignore https://raw.githubusercontent.com/vikichand/the-ultimate-giti
 ```
 
 Appending to one you already have: `curl -s <same-url> >> .gitignore`.
-In PowerShell use `curl.exe` - PowerShell aliases `curl` to `Invoke-WebRequest`, which rejects these
-flags. Git Bash, WSL, macOS and Linux run it as written.
 
 Then the one check that matters - files already tracked that your new rules would ignore, which is
 the silent-breakage case:
@@ -31,6 +29,14 @@ Empty output means you are clean. Anything listed is still tracked, because a `.
 untracks retroactively; use `git rm --cached <path>` if you want it gone. To ask why a specific file
 is ignored, `git check-ignore -v path/to/file` prints the exact line and pattern responsible - the
 only reliable way to find a silent drop, since `git status` never mentions ignored files.
+
+### Your shell
+
+| Shell | What changes |
+|---|---|
+| Git Bash · WSL · macOS · Linux | Nothing. The commands work as written. |
+| PowerShell | `curl.exe`, not `curl` - PowerShell aliases `curl` to `Invoke-WebRequest`, which rejects these flags. `sh` and `git` work as written. |
+| CMD | `%USERPROFILE%` in place of `~`. Git for Windows puts `sh`, `cp` and `curl` on PATH. |
 
 ## Updating
 
@@ -58,7 +64,8 @@ documents committing `CLAUDE.md`, and cloud agents, CI and review bots only ever
 committed - a rules file that lives on one laptop helps nobody else.
 
 Plenty of teams keep them out of the repo anyway. That is a policy choice rather than a default, so
-it is opt-in. Copy these **below the `:END` marker**, where updates leave them alone:
+the **Team policy** section at the end of the file ships those lines commented out. Uncomment the
+ones you want:
 
 ```gitignore
 AGENTS.md
@@ -69,9 +76,17 @@ plans/
 *.plan.md
 ```
 
-Below the marker is the load-bearing part: anything inside the markers is replaced wholesale the next
-time you update. Already committed one of these? `git rm --cached <path>` - the ignore rule alone
-will not untrack it.
+One carve-out on plans: throwaway implementation notes are fine to drop, but `specs/`, `.specify/`
+and `_bmad/` are spec-driven **source of truth** and are tracked on purpose, so a blanket `plans/`
+can eat a team's spec directory.
+
+The same section carries one active rule, `myDocs/`, for the personal document dump - notes, PDFs,
+research scraps - that belongs on your disk and never in the remote. Rename it to match your folder.
+
+**Where you put an edit decides whether it survives.** Everything in that section is still *inside*
+the `:START` / `:END` markers, so `update.sh` replaces it wholesale. Rules you need to keep across
+updates go **below the `:END` marker**, which is never touched. Already committed one of these files?
+`git rm --cached <path>` - an ignore rule alone will not untrack it.
 
 ## Why another one
 
@@ -81,7 +96,7 @@ Most "AI-era .gitignore" lists are assembled from other lists. This one was buil
 
 **It refuses the greedy patterns.** `*.bin` matches the `node_modules/.bin` directory. `*.key` eats Apple Keynote files. `*.lock` eats `Cargo.lock` and `poetry.lock`. `.terraform*` eats the dependency lock file HashiCorp tells you to commit. Half the test suite exists to prove those files survive.
 
-**It is tested.** 333 assertions run in CI on Ubuntu and macOS. 148 of them assert that a file is *not* ignored.
+**It is tested.** 336 assertions run in CI on Ubuntu and macOS. 150 of them assert that a file is *not* ignored.
 
 ## The rule
 
@@ -153,11 +168,11 @@ Git only treats `#` as a comment at the **start of a line**. That pattern is `*.
 It builds a throwaway repo, materialises every path in `tests/must-be-ignored.txt` and `tests/must-be-tracked.txt`, and asks `git check-ignore` about each one.
 
 ```
-  must be ignored   185 paths, 0 missed
-  must be tracked   148 paths, 0 wrongly ignored
+  must be ignored   186 paths, 0 missed
+  must be tracked   150 paths, 0 wrongly ignored
   dead patterns     0
   ------------------------------------------
-  PASS — 333 assertions
+  PASS — 336 assertions
 ```
 
 It neutralises your global and system git config first, so a personal `~/.config/git/ignore` cannot make the suite pass for the wrong reason.

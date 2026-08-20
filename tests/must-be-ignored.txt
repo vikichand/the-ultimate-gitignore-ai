@@ -221,3 +221,4 @@ shard.feather
 Thumbs.db
 notes.txt~
 .vimrc.swp
+myDocs/notes.pdf

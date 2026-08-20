@@ -167,3 +167,5 @@ cypress/e2e/login.cy.ts
 .yarn/sdks/typescript/lib/x.js
 .yarnrc.yml
 scripts/train.py
+plan.md
+plans/feature-auth.md
