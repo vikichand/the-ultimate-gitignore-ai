@@ -2,7 +2,7 @@
 
 [![verify](https://github.com/vikichand/the-ultimate-gitignore-ai/actions/workflows/verify.yml/badge.svg)](https://github.com/vikichand/the-ultimate-gitignore-ai/actions/workflows/verify.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![assertions](https://img.shields.io/badge/assertions-332-brightgreen.svg)](tests/)
+[![assertions](https://img.shields.io/badge/assertions-333-brightgreen.svg)](tests/)
 
 A `.gitignore` for repos where people and coding agents share a working directory.
 
@@ -46,7 +46,7 @@ Most "AI-era .gitignore" lists are assembled from other lists. This one was buil
 
 **It refuses the greedy patterns.** `*.bin` matches the `node_modules/.bin` directory. `*.key` eats Apple Keynote files. `*.lock` eats `Cargo.lock` and `poetry.lock`. `.terraform*` eats the dependency lock file HashiCorp tells you to commit. Half the test suite exists to prove those files survive.
 
-**It is tested.** 332 assertions run in CI on Ubuntu and macOS. 148 of them assert that a file is *not* ignored.
+**It is tested.** 333 assertions run in CI on Ubuntu and macOS. 148 of them assert that a file is *not* ignored.
 
 ## The rule
 
@@ -118,11 +118,11 @@ Git only treats `#` as a comment at the **start of a line**. That pattern is `*.
 It builds a throwaway repo, materialises every path in `tests/must-be-ignored.txt` and `tests/must-be-tracked.txt`, and asks `git check-ignore` about each one.
 
 ```
-  must be ignored   184 paths, 0 missed
+  must be ignored   185 paths, 0 missed
   must be tracked   148 paths, 0 wrongly ignored
   dead patterns     0
   ------------------------------------------
-  PASS — 332 assertions
+  PASS — 333 assertions
 ```
 
 It neutralises your global and system git config first, so a personal `~/.config/git/ignore` cannot make the suite pass for the wrong reason.

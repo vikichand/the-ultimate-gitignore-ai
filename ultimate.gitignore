@@ -597,7 +597,9 @@ cython_debug/
 .venv*/
 venv/
 venv*/
-ENV/
+# /ENV/ is anchored on purpose: git is case-INSENSITIVE on Windows and macOS, so an
+# unanchored ENV/ also matches every nested env/ - eating src/env/ Python packages.
+/ENV/
 .conda/
 
 # Notebooks

@@ -176,6 +176,7 @@ cypress/screenshots/spec/fail.png
 __pycache__/mod.cpython-312.pyc
 .venv/bin/python
 venv/bin/activate
+ENV/pyvenv.cfg
 .pytest_cache/CACHEDIR.TAG
 .ruff_cache/0.4.0/x
 .mypy_cache/3.12/mod.json
