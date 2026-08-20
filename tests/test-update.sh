@@ -65,5 +65,18 @@ if GITIGNORE_URL="$w/end-only.txt" sh "$ROOT/update.sh" >/dev/null 2>&1; then ba
 sed '/the-ultimate-gitignore-ai:END/d' "$w/upstream.gitignore" > truncated.txt
 if GITIGNORE_URL="$w/truncated.txt" sh "$ROOT/update.sh" >/dev/null 2>&1; then bad "T8 truncated payload accepted"; else pass "T8 truncated payload refused"; fi
 
+# T9/T10 the team-policy escape hatch, end to end. The file tracks AGENTS.md and CLAUDE.md by
+# design; a team that wants them ignored copies those lines BELOW the :END marker. That has to both
+# take effect and survive an update, or the documented workaround is a lie.
+mkdir -p policy && cd policy && git init -q
+{ cat "$ROOT/ultimate.gitignore"; printf '\n# team policy\nAGENTS.md\nCLAUDE.md\nplan.md\n'; } > .gitignore
+git check-ignore -q AGENTS.md && pass "T9 team override below the markers takes effect" || bad "T9 override did not apply"
+GITIGNORE_URL="$w/upstream.gitignore" sh "$ROOT/update.sh" >/dev/null 2>&1 || bad "T10 update exited non-zero"
+grep -q 'NEWLY-ADDED-PATTERN' .gitignore && pass "T10 managed block still updated" || bad "T10 block not updated"
+git check-ignore -q AGENTS.md && pass "T10 team override survived the update" || bad "T10 override was WIPED by update.sh"
+# ...and with no override, the shipped default must still track them (the file's headline rule).
+cd "$w" && mkdir -p default && cd default && git init -q && cp "$ROOT/ultimate.gitignore" .gitignore
+git check-ignore -q AGENTS.md && bad "T10 default wrongly ignores AGENTS.md" || pass "T10 default still tracks AGENTS.md"
+
 echo "---"
 [ "$fail" -eq 0 ] && echo "ALL PASS" || { echo "FAILURES PRESENT"; exit 1; }

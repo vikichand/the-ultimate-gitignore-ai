@@ -16,31 +16,26 @@ Every non-obvious entry is traced to an official doc or the tool's own source. T
 curl -o .gitignore https://raw.githubusercontent.com/vikichand/the-ultimate-gitignore-ai/main/ultimate.gitignore
 ```
 
-Appending to one you already have:
+Appending to one you already have: `curl -s <same-url> >> .gitignore`.
+In PowerShell use `curl.exe` - PowerShell aliases `curl` to `Invoke-WebRequest`, which rejects these
+flags. Git Bash, WSL, macOS and Linux run it as written.
 
-```bash
-curl -s https://raw.githubusercontent.com/vikichand/the-ultimate-gitignore-ai/main/ultimate.gitignore >> .gitignore
-```
-
-Then run the one check that matters. This lists files already tracked in git that your new rules would ignore — the silent-breakage case:
+Then the one check that matters - files already tracked that your new rules would ignore, which is
+the silent-breakage case:
 
 ```bash
 git ls-files -i -c --exclude-standard
 ```
 
-Empty output means you are clean. Anything listed is still tracked (a `.gitignore` never untracks retroactively); use `git rm --cached <path>` if you actually want it gone.
-
-To ask why one specific file is being ignored:
-
-```bash
-git check-ignore -v path/to/file
-```
-
-That prints the exact file, line number and pattern responsible. It is the only reliable way to find a silent drop, because `git status` never mentions ignored files.
+Empty output means you are clean. Anything listed is still tracked, because a `.gitignore` never
+untracks retroactively; use `git rm --cached <path>` if you want it gone. To ask why a specific file
+is ignored, `git check-ignore -v path/to/file` prints the exact line and pattern responsible - the
+only reliable way to find a silent drop, since `git status` never mentions ignored files.
 
 ## Updating
 
-The file is wrapped in `# >>> the-ultimate-gitignore-ai:START` / `# <<< ...:END` markers. Anything you write **outside** them is yours, and `update.sh` never touches it:
+The file is wrapped in `# >>> the-ultimate-gitignore-ai:START` / `# <<< ...:END` markers. Anything
+you write **outside** them is yours, and `update.sh` never touches it:
 
 ```bash
 curl -fsSLO https://raw.githubusercontent.com/vikichand/the-ultimate-gitignore-ai/main/update.sh
@@ -48,11 +43,35 @@ sh update.sh                 # updates ./.gitignore
 sh update.sh path/to/project # or another project's
 ```
 
-Keep `update.sh` around and re-run it whenever you want the latest; it replaces only the managed block, reports a no-op when you are already current, and refuses to write anything if the download is not this file (a 404 body, a captive-portal page, a truncated transfer). A `.gitignore` with no markers is never rewritten in place — the block is appended below your rules instead.
+It replaces only the managed block, reports a no-op when you are already current, and refuses to
+write anything if the download is not this file - a 404 body, a captive-portal page, a truncated
+transfer. A `.gitignore` with no markers is never rewritten in place; the block is appended below
+your rules instead.
 
-Downloading and running it in two steps is deliberate. `curl … | sh` runs code you have not seen, and this file exists partly to stop that class of accident; download it, glance at it, then run it.
+Two steps rather than `curl … | sh` on purpose: that runs code you have not read, which is the class
+of accident this file exists to prevent.
 
-If you would rather not keep a script, re-fetch the file by hand and paste your own rules back — the markers show you exactly which region is managed.
+## Team policy: agent rules and plans
+
+This file **tracks** `AGENTS.md`, `CLAUDE.md` and `.claude/`. They are team intent, Anthropic
+documents committing `CLAUDE.md`, and cloud agents, CI and review bots only ever see what is
+committed - a rules file that lives on one laptop helps nobody else.
+
+Plenty of teams keep them out of the repo anyway. That is a policy choice rather than a default, so
+it is opt-in. Copy these **below the `:END` marker**, where updates leave them alone:
+
+```gitignore
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+plan.md
+plans/
+*.plan.md
+```
+
+Below the marker is the load-bearing part: anything inside the markers is replaced wholesale the next
+time you update. Already committed one of these? `git rm --cached <path>` - the ignore rule alone
+will not untrack it.
 
 ## Why another one
 
@@ -155,7 +174,7 @@ To test a different file:
 ./tests/test-update.sh
 ```
 
-13 assertions, run offline against a local stand-in for upstream: the managed block updates, rules above and below it survive, a marker-less file is appended to rather than rewritten, and a payload that is not this file is refused without touching your `.gitignore`.
+17 assertions, run offline against a local stand-in for upstream: the managed block updates, rules above and below it survive, a marker-less file is appended to rather than rewritten, and a payload that is not this file is refused without touching your `.gitignore`. The team-policy override is covered end to end: it takes effect, and it survives an update.
 
 ## Things the file deliberately leaves to you
 

@@ -753,4 +753,28 @@ desktop.ini
 #    Windsurf    .codeiumignore         Cline  .clineignore    Roo  .rooignore
 #    JetBrains   .aiignore              Copilot  server-side content exclusion only
 # ==============================================================================
+# ==============================================================================
+#  TEAM POLICY  --  opt-in, and it belongs OUTSIDE the markers
+# ==============================================================================
+#
+#  Some teams keep agent rules and planning notes out of the repo entirely.
+#  That is a policy choice, not a default: AGENTS.md and CLAUDE.md are team
+#  intent, Anthropic documents committing CLAUDE.md, and the whole point of the
+#  AGENTS.md standard is that a clone carries its own rules. Cloud agents, CI,
+#  and code-review bots only ever see what is committed. So this file tracks
+#  them, and opting out is deliberate.
+#
+#  To opt out, COPY these lines BELOW the :END marker, not here. Anything inside
+#  the markers is replaced wholesale by update.sh; anything outside it survives.
+#
+#    AGENTS.md
+#    CLAUDE.md
+#    GEMINI.md
+#    plan.md
+#    plans/
+#    *.plan.md
+#
+#  Already committed one? .gitignore will not untrack it: git rm --cached <path>
+# ==============================================================================
+
 # <<< the-ultimate-gitignore-ai:END
