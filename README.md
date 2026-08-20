@@ -38,6 +38,22 @@ git check-ignore -v path/to/file
 
 That prints the exact file, line number and pattern responsible. It is the only reliable way to find a silent drop, because `git status` never mentions ignored files.
 
+## Updating
+
+The file is wrapped in `# >>> the-ultimate-gitignore-ai:START` / `# <<< ...:END` markers. Anything you write **outside** them is yours, and `update.sh` never touches it:
+
+```bash
+curl -fsSLO https://raw.githubusercontent.com/vikichand/the-ultimate-gitignore-ai/main/update.sh
+sh update.sh                 # updates ./.gitignore
+sh update.sh path/to/project # or another project's
+```
+
+Keep `update.sh` around and re-run it whenever you want the latest; it replaces only the managed block, reports a no-op when you are already current, and refuses to write anything if the download is not this file (a 404 body, a captive-portal page, a truncated transfer). A `.gitignore` with no markers is never rewritten in place — the block is appended below your rules instead.
+
+Downloading and running it in two steps is deliberate. `curl … | sh` runs code you have not seen, and this file exists partly to stop that class of accident; download it, glance at it, then run it.
+
+If you would rather not keep a script, re-fetch the file by hand and paste your own rules back — the markers show you exactly which region is managed.
+
 ## Why another one
 
 Most "AI-era .gitignore" lists are assembled from other lists. This one was built by reading the vendors' documentation and, where the docs were wrong or silent, their source. Three things fall out of that:
@@ -132,6 +148,14 @@ To test a different file:
 ```bash
 ./verify.sh path/to/other.gitignore
 ```
+
+`update.sh` has its own suite, since it edits a file you keep your own rules in:
+
+```bash
+./tests/test-update.sh
+```
+
+13 assertions, run offline against a local stand-in for upstream: the managed block updates, rules above and below it survive, a marker-less file is appended to rather than rewritten, and a payload that is not this file is refused without touching your `.gitignore`.
 
 ## Things the file deliberately leaves to you
 

@@ -28,9 +28,12 @@ jobs:
       - name: Run assertion suite
         run: ./verify.sh
 
+      - name: Run update.sh suite
+        run: ./tests/test-update.sh
+
   shellcheck:
     name: shellcheck verify.sh
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - run: shellcheck verify.sh
+      - run: shellcheck verify.sh update.sh tests/test-update.sh

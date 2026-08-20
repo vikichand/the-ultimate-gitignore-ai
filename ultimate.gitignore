@@ -1,3 +1,6 @@
+# >>> the-ultimate-gitignore-ai:START - managed block, replaced wholesale by update.sh.
+# Keep YOUR OWN rules OUTSIDE these markers (above or below) and updates will not touch them.
+# Source: https://github.com/vikichand/the-ultimate-gitignore-ai
 # ==============================================================================
 #  THE ULTIMATE .gitignore FOR AI DEVELOPMENT
 #  Built 2026-07-26. Every non-obvious entry verified against official docs or
@@ -750,3 +753,4 @@ desktop.ini
 #    Windsurf    .codeiumignore         Cline  .clineignore    Roo  .rooignore
 #    JetBrains   .aiignore              Copilot  server-side content exclusion only
 # ==============================================================================
+# <<< the-ultimate-gitignore-ai:END
