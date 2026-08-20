@@ -2,6 +2,12 @@
 # Assertions for update.sh. It edits a file people keep their own rules in, so every path that
 # writes - and every path that must refuse to write - is exercised here. Runs offline: GITIGNORE_URL
 # points at a local file, the same override a fork would use.
+#
+# SC2015 (`A && pass || bad` is not if-then-else): here it is safe and deliberate - `pass` ends in a
+# printf and always returns 0, so the `|| bad` branch cannot fire after a successful assertion.
+# SC1007 (`CDPATH= cd`): a deliberate prefix assignment that stops a user's CDPATH from making `cd`
+# print and jump elsewhere. Same idiom as verify.sh and the-agent-kit's installer.
+# shellcheck disable=SC2015,SC1007
 set -u
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 fail=0
